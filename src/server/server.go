@@ -1,9 +1,10 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/nkanaev/yarr/src/storage"
 	"github.com/nkanaev/yarr/src/worker"
@@ -62,6 +63,6 @@ func (s *Server) Start() {
 		err = httpserver.ListenAndServe()
 	}
 	if err != http.ErrServerClosed {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("")
 	}
 }

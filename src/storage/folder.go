@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"log"
+	"github.com/rs/zerolog/log"
 )
 
 type Folder struct {
@@ -17,14 +17,14 @@ func (s *Storage) CreateFolder(title string) *Folder {
 		on conflict (title) do update set title = ?
         returning id`,
 		title, expanded,
-        // provide title again so that we can extract row id
-        title,
+		// provide title again so that we can extract row id
+		title,
 	)
-    var id int64
-    err := row.Scan(&id)
+	var id int64
+	err := row.Scan(&id)
 
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return nil
 	}
 	return &Folder{Id: id, Title: title, IsExpanded: expanded}
@@ -33,7 +33,7 @@ func (s *Storage) CreateFolder(title string) *Folder {
 func (s *Storage) DeleteFolder(folderId int64) bool {
 	_, err := s.db.Exec(`delete from folders where id = ?`, folderId)
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 	}
 	return err == nil
 }
@@ -56,14 +56,14 @@ func (s *Storage) ListFolders() []Folder {
 		order by title collate nocase
 	`)
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return result
 	}
 	for rows.Next() {
 		var f Folder
 		err = rows.Scan(&f.Id, &f.Title, &f.IsExpanded)
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("")
 			return result
 		}
 		result = append(result, f)

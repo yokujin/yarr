@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Context struct {
@@ -27,7 +28,7 @@ func (c *Context) Next() {
 func (c *Context) JSON(status int, data interface{}) {
 	body, err := json.Marshal(data)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("")
 	}
 	c.Out.Header().Set("Content-Type", "application/json; charset=utf-8")
 	c.Out.WriteHeader(status)

@@ -1,3 +1,4 @@
+//go:build darwin || windows
 // +build darwin windows
 
 /*
@@ -7,10 +8,11 @@ package systray
 
 import (
 	"fmt"
-	"log"
 	"runtime"
 	"sync"
 	"sync/atomic"
+
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -224,7 +226,7 @@ func systrayMenuItemSelected(id uint32) {
 	item, ok := menuItems[id]
 	menuItemsLock.RUnlock()
 	if !ok {
-		log.Printf("No menu item with ID %v", id)
+		log.Info().Msgf("No menu item with ID %v", id)
 		return
 	}
 	select {

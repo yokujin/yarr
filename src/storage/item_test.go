@@ -1,11 +1,12 @@
 package storage
 
 import (
-	"log"
 	"reflect"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 /*
@@ -85,7 +86,7 @@ func getItem(db *Storage, guid string) *Item {
 		&i.Date, &i.Status, &i.ImageURL, &i.AudioURL,
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("")
 	}
 	return i
 }

@@ -3,9 +3,10 @@ package storage
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/nkanaev/yarr/src/content/htmlutil"
 )
@@ -72,7 +73,7 @@ type MarkFilter struct {
 func (s *Storage) CreateItems(items []Item) bool {
 	tx, err := s.db.Begin()
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return false
 	}
 
@@ -92,16 +93,16 @@ func (s *Storage) CreateItems(items []Item) bool {
 			now, UNREAD,
 		)
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("")
 			if err = tx.Rollback(); err != nil {
-				log.Print(err)
+				log.Error().Err(err).Msg("")
 				return false
 			}
 			return false
 		}
 	}
 	if err = tx.Commit(); err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return false
 	}
 	return true
@@ -170,7 +171,7 @@ func (s *Storage) ListItems(filter ItemFilter, limit int, newestFirst bool) []It
 		`, predicate, order, limit)
 	rows, err := s.db.Query(query, args...)
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return result
 	}
 	for rows.Next() {
@@ -181,7 +182,7 @@ func (s *Storage) ListItems(filter ItemFilter, limit int, newestFirst bool) []It
 			&x.Status, &x.ImageURL, &x.AudioURL,
 		)
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("")
 			return result
 		}
 		result = append(result, x)
@@ -202,7 +203,7 @@ func (s *Storage) GetItem(id int64) *Item {
 		&i.Date, &i.Status, &i.ImageURL, &i.AudioURL,
 	)
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return nil
 	}
 	return i
@@ -221,7 +222,7 @@ func (s *Storage) MarkItemsRead(filter MarkFilter) bool {
 		`, READ, predicate, STARRED)
 	_, err := s.db.Exec(query, args...)
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 	}
 	return err == nil
 }
@@ -243,7 +244,7 @@ func (s *Storage) FeedStats() []FeedStat {
 		group by feed_id
 	`, UNREAD, STARRED))
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return result
 	}
 	for rows.Next() {
@@ -261,7 +262,7 @@ func (s *Storage) SyncSearch() {
 		where search_rowid is null;
 	`)
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return
 	}
 
@@ -278,7 +279,7 @@ func (s *Storage) SyncSearch() {
 			item.Title, htmlutil.ExtractText(item.Content),
 		)
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("")
 			return
 		}
 		if numrows, err := result.RowsAffected(); err == nil && numrows == 1 {
@@ -318,7 +319,7 @@ func (s *Storage) DeleteOldItems() {
 	`, itemsKeepSize, STARRED)
 
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("")
 		return
 	}
 
@@ -346,16 +347,16 @@ func (s *Storage) DeleteOldItems() {
 			time.Now().UTC().Add(-time.Hour*time.Duration(24*itemsKeepDays)),
 		)
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("")
 			return
 		}
 		numDeleted, err := result.RowsAffected()
 		if err != nil {
-			log.Print(err)
+			log.Error().Err(err).Msg("")
 			return
 		}
 		if numDeleted > 0 {
-			log.Printf("Deleted %d old items (feed: %d)", numDeleted, feedId)
+			log.Info().Msgf("Deleted %d old items (feed: %d)", numDeleted, feedId)
 		}
 	}
 }

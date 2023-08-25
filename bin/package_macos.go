@@ -6,12 +6,13 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path"
 	"strconv"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 var plist = `<?xml version="1.0" encoding="UTF-8"?>
@@ -53,7 +54,7 @@ func run(cmd ...string) {
 	fmt.Println(cmd)
 	err := exec.Command(cmd[0], cmd[1:]...).Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("exec")
 	}
 }
 

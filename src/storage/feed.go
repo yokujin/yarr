@@ -2,7 +2,8 @@ package storage
 
 import (
 	"database/sql"
-	"log"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Feed struct {
@@ -21,7 +22,7 @@ func (s *Storage) CreateFeed(title, description, link, feedLink string, folderId
 		title = feedLink
 	}
 	row := s.db.QueryRow(`
-		insert into feeds (title, description, link, feed_link, folder_id) 
+		insert into feeds (title, description, link, feed_link, folder_id)
 		values (?, ?, ?, ?, ?)
 		on conflict (feed_link) do update set folder_id = ?
         returning id`,
@@ -29,12 +30,12 @@ func (s *Storage) CreateFeed(title, description, link, feedLink string, folderId
 		folderId,
 	)
 
-    var id int64
-    err := row.Scan(&id)
-    if err != nil {
-        log.Print(err)
-        return nil
-    }
+	var id int64
+	err := row.Scan(&id)
+	if err != nil {
+		log.Error().Err(err).Msg("")
+		return nil
+	}
 	return &Feed{
 		Id:          id,
 		Title:       title,
