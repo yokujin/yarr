@@ -1,5 +1,7 @@
 /_output
+/tmp
 /yarr
 *.db
 *.syso
 versioninfo.rc
+.air.toml
