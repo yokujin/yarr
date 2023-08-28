@@ -1,9 +1,10 @@
+//go:build windows
 // +build windows
 
 package systray
 
 import (
-	"io/ioutil"
+	"os"
 	"runtime"
 	"sync/atomic"
 	"testing"
@@ -105,7 +106,7 @@ func TestBaseWindowsTray(t *testing.T) {
 
 func TestWindowsRun(t *testing.T) {
 	onReady := func() {
-		b, err := ioutil.ReadFile(iconFilePath)
+		b, err := os.ReadFile(iconFilePath)
 		if err != nil {
 			t.Fatalf("Can't load icon file: %v", err)
 		}

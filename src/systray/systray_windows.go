@@ -6,7 +6,6 @@ package systray
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -823,7 +822,7 @@ func iconBytesToFilePath(iconBytes []byte) (string, error) {
 	iconFilePath := filepath.Join(os.TempDir(), "systray_temp_icon_"+dataHash)
 
 	if _, err := os.Stat(iconFilePath); os.IsNotExist(err) {
-		if err := ioutil.WriteFile(iconFilePath, iconBytes, 0644); err != nil {
+		if err := os.WriteFile(iconFilePath, iconBytes, 0644); err != nil {
 			return "", err
 		}
 	}
